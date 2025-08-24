@@ -1,0 +1,30 @@
+
+{
+  "name": "GeoData Dev",
+  "dockerFile": "Dockerfile",
+  "remoteUser": "root",
+  "features": {},
+  "runArgs": ["--privileged","-v","/var/run/docker.sock:/var/run/docker.sock"],
+  "mounts": [
+    "type=bind,source=${localEnv:HOME}/.kube,target=/root/.kube",
+    "type=bind,source=${localEnv:HOME}/.ssh,target=/root/.ssh"
+    // "type=bind,source=${localEnv:HOME}/.aws,target=/root/.aws",
+    // "type=bind,source=${localEnv:HOME}/.azure,target=/root/.azure"
+  ],
+  "containerEnv": {
+    "KUBECONFIG": "/root/.kube/config",
+    "HELM_PLUGINS": "/root/.local/share/helm/plugins"
+  },
+  "postCreateCommand": "bash /usr/local/bin/postCreate.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "redhat.vscode-yaml",
+        "ms-azuretools.vscode-docker",
+        "hashicorp.terraform",
+        "eamodio.gitlens"
+      ]
+    }
+  }
+}
