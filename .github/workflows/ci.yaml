@@ -1,15 +1,108 @@
-name: CI (geodata-native-suite)
-on: { push: { branches: [ "main" ] }, pull_request: { branches: [ "main" ] } }
+name: CI
+
+on:
+  push:
+    branches: [ "main", "geodata-*", "release-*" ]
+  pull_request:
+    branches: [ "**" ]
+
 jobs:
-  lint:
+  yamllint:
+    name: YAML Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: azure/setup-helm@v4
-        with: { version: v3.15.3 }
-      - name: Install tools
-        run: sudo apt-get update && sudo apt-get install -y yamllint
-      - name: Helm lint
-        run: for c in charts/*; do [ -d "$c" ] && helm lint "$c"; done
-      - name: YAML lint
-        run: yamllint -d "{extends: default, rules: {line-length: disable}}" charts values deploy || true
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install yamllint
+        run: pip install yamllint
+      - name: Lint YAML
+        run: |
+          yamllint -c .yamllint.yaml . || (echo "::warning::yamllint reported issues"; exit 1)
+
+  helm-lint:
+    name: Helm Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+      - name: Lint all charts
+        run: |
+          shopt -s nullglob
+          for chart in charts/*; do
+            if [ -f "$chart/Chart.yaml" ]; then
+              echo "==> helm lint $chart"
+              helm lint "$chart"
+            fi
+          done
+
+  gradle-verify:
+    name: Search-Service JVM build (sanity)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Gradle build (if wrapper exists)
+        run: |
+          if [ -x "services/search-service/gradlew" ]; then
+            (cd services/search-service && ./gradlew --no-daemon clean build -x test)
+          else
+            echo "gradlew not found in services/search-service (skipping)"
+          fi
+
+  python-sanity:
+    name: Python services sanity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install minimal deps (index-service)
+        run: |
+          if [ -f services/index-service/requirements.txt ]; then
+            python -m pip install --upgrade pip
+            pip install -r services/index-service/requirements.txt || true
+          fi
+      - name: Install minimal deps (fetch-service)
+        run: |
+          if [ -f services/fetch-service/requirements.txt ]; then
+            python -m pip install --upgrade pip
+            pip install -r services/fetch-service/requirements.txt || true
+          fi
+      - name: Import check
+        run: |
+          python - <<'PY'
+          import importlib.util, sys, os
+          paths = [
+            "services/index-service/app/main.py",
+            "services/fetch-service/app/main.py"
+          ]
+          ok = True
+          for p in paths:
+            if os.path.exists(p):
+              name = os.path.splitext(os.path.basename(p))[0]
+              spec = importlib.util.spec_from_file_location(name, p)
+              try:
+                m = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(m) # type: ignore
+                print(f"[OK] import {p}")
+              except Exception as e:
+                print(f"[FAIL] import {p}: {e}")
+                ok = False
+          sys.exit(0 if ok else 1)
+          PY
