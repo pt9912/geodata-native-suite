@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **YAML**: Externalsecrets-Beispiele von `?`-Schlüsselindikatoren bereinigt und Einrückung automatisch korrigiert.
 - **CI**: build-and-push-images.yml – BASE_IMAGE nun via env export + blockierter build-args (kompatibel mit GitHub-Expressions).
 - **YAML**: externalsecrets Beispiele – explizite Mapping-Keys ('?') entfernt und Einrückung nach Schlüsselblöcken korrigiert.
+- **search-service**: Tracing-Module über `io.micronaut.tracing:micronaut-tracing-bom` (Version via `micronautTracingVersion`) aufgelöst.
 ## [geodata-3-patch-v1] - 2025-08-24
 ### Added
 - **search-service (Java/Micronaut)**: STAC `/api/v1/search` (POST) mit Filterobjekt (`bbox`, `datetime`, `collections`, `intersects`, `q`), **BBox-Reprojektion** `EPSG:3857 → EPSG:4326`.
