@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Changed
+- **search-service(native)**: microdnf-Install entfernt; Build nutzt konsequent Gradle Wrapper.
+- **search-service(native)**: ENV-Zeilen repariert und JDK21 für Gradle erzwungen.
+- **CI**: Wrapper chmod-Step ergänzt.
 ### Added
 - PostGIS/SpatiaLite Query-Layer für `search-service` (ST_Intersects, Zeitfilter) – *in Arbeit*
 - Volltextsuche (GIN/TSVECTOR) – *geplant*
