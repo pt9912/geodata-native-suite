@@ -1,0 +1,10 @@
+
+replicaCount: 2
+image: { pullPolicy: IfNotPresent }
+service: { type: ClusterIP, port: 8080 }
+ingress: { enabled: false }
+hpa: { enabled: true, minReplicas: 2, maxReplicas: 6, cpuUtilization: 70 }
+pdb: { enabled: true }
+resources:
+  requests: { cpu: "100m", memory: "128Mi" }
+  limits:   { cpu: "500m", memory: "512Mi" }
