@@ -109,9 +109,7 @@ jobs:
           PY="$(command -v python3 || command -v python)"
           "$PY" - <<'PY'
           import py_compile, sys, pathlib
-          paths = [            "services/index-service/app",
-            "services/fetch-service/app"
-]
+          paths = ["services/index-service/app", "services/fetch-service/app"]
           ok=True
           for base in paths:
             p = pathlib.Path(base)
@@ -133,9 +131,7 @@ jobs:
           PY="$(command -v python3 || command -v python)"
           "$PY" - <<'PY'
           import importlib.util, os, traceback
-          files = [            "services/index-service/app/main.py",
-            "services/fetch-service/app/main.py"
-]
+          files = ["services/index-service/app/main.py", "services/fetch-service/app/main.py"]
           for p in files:
             if os.path.exists(p):
               try:
