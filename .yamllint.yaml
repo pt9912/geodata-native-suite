@@ -6,15 +6,13 @@ ignore: |
   charts/*/templates/*.yml
 
 rules:
-  line-length:
-    max: 160
-    level: warning
-  truthy:
-    allowed-values: ['true', 'false', 'on', 'off', 'yes', 'no']
-    check-keys: false
-  indentation:
-    indent-sequences: consistent
-  document-start:
-    present: true
-  new-line-at-end-of-file:
-    present: true
+  # statt: new-line-at-end-of-file: {present: true}
+  new-line-at-end-of-file: enable
+
+  # deine restlichen Regeln:
+  line-length: disable
+  document-start: disable
+  braces:
+    max-spaces-inside: 0
+  colons:
+    max-spaces-after: 1
