@@ -78,57 +78,24 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Prepare tags
-
         id: prep
-
         shell: bash
-
         run: |
-
           set -euo pipefail
-
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}"
-
           SHORT_SHA="${GITHUB_SHA::7}"
-
           SHA_TAG="${IMAGE}:sha-${SHORT_SHA}"
-
           # slugify branch name: lower-case, replace slashes/illegal chars with '-'
-
           BR_RAW="${GITHUB_REF_NAME}"
-
           BR_LOWER="${BR_RAW,,}"
-
           BR_SLASH="${BR_LOWER//\//-}"
-
           BRANCH="$(printf "%s" "$BR_SLASH" | sed -E 's/[^a-z0-9._-]+/-/g; s/^-+//; s/-+$//')"
-
           BRANCH_TAG="${IMAGE}:${BRANCH}"
-
           echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
-
           echo "sha_tag=${SHA_TAG}" >> "$GITHUB_OUTPUT"
-
           echo "branch_tag=${BRANCH_TAG}" >> "$GITHUB_OUTPUT"
-
           if [[ "${{ github.ref_type }}" == "branch" && "${{ github.ref_name }}" == "main" ]]; then
-
             echo "latest_tag=${IMAGE}:latest" >> "$GITHUB_OUTPUT"
-
-          fi
-        id: prep
-        shell: bash
-        run: |
-          set -euo pipefail
-          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}"
-          SHA_TAG="${IMAGE}:sha-${GITHUB_SHA::7}"
-          BRANCH="${GITHUB_REF_NAME//echo "BASE_IMAGE=${ steps.graal_base_probe.outputs.base != '' && steps.graal_base_probe.outputs.base || '${COMMUNITY_21}' }" >> $GITHUB_ENV//-}"
-          BRANCH_TAG="${IMAGE}:${BRANCH}"
-          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
-          echo "sha_tag=${SHA_TAG}" >> $GITHUB_OUTPUT
-          echo "branch_tag=${BRANCH_TAG}" >> $GITHUB_OUTPUT
-          if ["${{ github.ref_type }}" = "branch"] && ["${{ github.ref_name }}" = "main"]; then
-            echo "latest_tag=${IMAGE}:latest" >> $GITHUB_OUTPUT
           fi
 
       - name: Build & Push (${{ matrix.name }})
