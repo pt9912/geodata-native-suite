@@ -1,0 +1,9 @@
+
+apiVersion: v2
+name: search-postgis
+description: search-postgis chart (Ingress included, cert-manager ready)
+type: application
+version: 0.1.0
+annotations:
+  licenses: Apache-2.0
+appVersion: "1.0.0"

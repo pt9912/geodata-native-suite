@@ -1,0 +1,12 @@
+
+1. Get the application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+  echo "Visit:"
+  {{- range .Values.ingress.hosts }}
+  echo "  https://{{ .host }}"
+  {{- end }}
+{{- else }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name={{ include "app.name" . }}" -o jsonpath="{.items[0].metadata.name}")
+  kubectl port-forward --namespace {{ .Release.Namespace }} $POD_NAME 8080:{{ .Values.service.port }}
+  echo "http://127.0.0.1:8080"
+{{- end }}
