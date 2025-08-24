@@ -1,0 +1,13 @@
+
+{
+  "type": "record",
+  "name": "StacItemIndexed",
+  "namespace": "io.geodata.events",
+  "fields": [
+    { "name": "id", "type": "string" },
+    { "name": "collection", "type": "string" },
+    { "name": "datetime", "type": "string" },
+    { "name": "bbox", "type": { "type": "array", "items": "double" } },
+    { "name": "provider", "type": "string" }
+  ]
+}

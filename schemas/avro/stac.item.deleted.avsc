@@ -1,0 +1,11 @@
+
+{
+  "type": "record",
+  "name": "StacItemDeleted",
+  "namespace": "io.geodata.events",
+  "fields": [
+    { "name": "id", "type": "string" },
+    { "name": "collection", "type": "string" },
+    { "name": "provider", "type": "string" }
+  ]
+}
