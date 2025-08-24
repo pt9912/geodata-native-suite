@@ -1,18 +1,30 @@
-# Native build using GraalVM container toolchain
-## GRAALVM BASE CANDIDATES (workflow probes):
-##  - ghcr.io/graalvm/native-image:ol9-java21-24.1.0
-##  - ghcr.io/graalvm/native-image:ol9-java21-24.0.2
-##  - ghcr.io/graalvm/native-image:ol9-java21-24
-##  - ghcr.io/graalvm/native-image:ol9-java21-23.1.3
 ARG BASE_IMAGE=ghcr.io/graalvm/native-image-community:21-ol9
+
+# Stage 0: bootstrap gradle wrapper (no network tools needed in Graal stage)
+FROM gradle:8.8-jdk21 AS bootstrap
+WORKDIR /src
+COPY . .
+RUN gradle -q wrapper --gradle-version 8.8
+
+# Stage 1: native-image build using GraalVM CE JDK21
 FROM ${BASE_IMAGE} AS build
 WORKDIR /work
 ENV JAVA_HOME=/usr/lib64/graalvm/graalvm-community-java21
 ENV PATH=$JAVA_HOME/bin:$PATH
-RUN java -version && echo "JAVA_HOME=$JAVA_HOME" && command -v java || true
-
+# copy wrapper from bootstrap
+COPY --from=bootstrap /src/gradlew ./gradlew
+COPY --from=bootstrap /src/gradle/wrapper ./gradle/wrapper
+# copy sources last for better layer caching
 COPY . .
-# Build native image (force JDK21, wrapper only)
-RUN chmod +x ./gradlew 2>/dev/null || true \
- && JAVA_HOME=$JAVA_HOME PATH=$JAVA_HOME/bin:$PATH ./gradlew -x test nativeCompile \
- || (echo 'Gradle Wrapper fehlt. Bitte gradlew committen.' >&2; exit 2)
+RUN java -version && echo "JAVA_HOME=$JAVA_HOME" && command -v java || true
+# Build native image via wrapper (no tests)
+RUN chmod +x ./gradlew \
+ && JAVA_HOME=$JAVA_HOME PATH=$JAVA_HOME/bin:$PATH ./gradlew -x test nativeCompile
+
+# Stage 2: minimal runtime image
+FROM gcr.io/distroless/base-nossl:nonroot
+WORKDIR /app
+COPY --from=build /work/build/native/nativeCompile/* /app/
+USER nonroot
+EXPOSE 8080
+ENTRYPOINT ["/app/application"]
