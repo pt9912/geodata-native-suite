@@ -29,7 +29,7 @@ jobs:
           # search-service: JVM (portable)
           - name: search-service-jvm
             context: services/search-service
-            build-args: ${{ steps.graal_base_probe.outputs.base && format('BASE_IMAGE={0}', steps.graal_base_probe.outputs.base) || '' }}
+
             file: services/search-service/Dockerfile.jvm
             image: search-service
           # search-service: Native (fast startup)
@@ -97,6 +97,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.context }}
+          build-args: |
+            BASE_IMAGE=${{ env.BASE_IMAGE }}
           file: ${{ matrix.file }}
           platforms: linux/amd64
           push: true
