@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Helm Values: Plattform-spezifische Defaults (RKE2/EKS/AKS) weiter harmonisieren – *geplant*
 
 ### Fixed
+- **search-service**: Build-Abhängigkeiten stabilisiert (Micronaut BOM eingebunden).
+- **search-service-native**: GraalVM BASE_IMAGE robust gemacht (Default + Workflow-Probe).
 - **CI**: Diagnose-Step „Workflow file line count“ gehärtet (continue-on-error, kein Abbruch mehr).
 - **index-service**: boto3/botocore Pins (1.34.131) für Kompatibilität mit aioboto3 gesetzt.
 - **fetch-service**: Abhängigkeitskonflikt boto3/aioboto3/botocore behoben, Pin auf botocore=1.34.131 (boto3=1.34.131).
