@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **search-service**: Tracing-Module über `io.micronaut.tracing:micronaut-tracing-bom` (Version via `micronautTracingVersion`) aufgelöst.
 - **CI**: Docker Build in zwei Varianten – ohne build-args (Fallback auf Dockerfile-Default) bzw. mit build-args nur wenn gesetzt (kein leerer BASE_IMAGE mehr).
 - **search-service**: BOM auf micronaut-core-bom (4.9.10) vereinheitlicht; `micronaut-cache-redis` mit Version gepinnt.
+- **search-service(native)**: Umgestellt auf GraalVM **Community** Container `ghcr.io/graalvm/native-image-community:24.0.1-ol9` als Default-BASE_IMAGE.
 ## [geodata-3-patch-v1] - 2025-08-24
 ### Added
 - **search-service (Java/Micronaut)**: STAC `/api/v1/search` (POST) mit Filterobjekt (`bbox`, `datetime`, `collections`, `intersects`, `q`), **BBox-Reprojektion** `EPSG:3857 → EPSG:4326`.
