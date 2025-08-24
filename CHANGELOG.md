@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **search-service(jvm)**: Multi-Stage Dockerfile – wrapper in Build-Stage erzeugt und fat-jar nach Temurin JRE21 kopiert; reproduzierbarer Build ohne lokalen Wrapper.
+
+### Changed
 - **search-service(native)**: Multi-Stage Build – bootstrap erzeugt Gradle Wrapper, Graal-Stage nutzt Wrapper für nativeCompile; kein curl/which mehr nötig.
 
 ### Fixed

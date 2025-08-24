@@ -1,20 +1,18 @@
-# Build stage: JVM fat jar
+# ---- Stage 0: Build (creates wrapper + builds fat jar) ----
 FROM gradle:8.8-jdk21 AS build
 WORKDIR /workspace
 COPY . .
-RUN --mount=type=cache,target=/home/gradle/.gradle \
-    ( [ -x "./gradlew" ] && ./gradlew --no-daemon --stacktrace --warning-mode all clean shadowJar \
-      || gradle --no-daemon --stacktrace --warning-mode all clean shadowJar ) \
-  || ( [ -x "./gradlew" ] && ./gradlew --no-daemon --stacktrace --warning-mode all clean build \
-      || gradle --no-daemon --stacktrace --warning-mode all clean build )
+# Generate wrapper deterministically (in case it's not in repo)
+RUN gradle -q wrapper --gradle-version 8.8
+# Use wrapper for the build (repeatable & pinned), disable tests for speed
+RUN chmod +x ./gradlew && \
+    ./gradlew --no-daemon --stacktrace --warning-mode all clean shadowJar
 
-
-# Runtime stage
+# ---- Stage 1: Runtime (JRE21) ----
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
-# Try shadow jar first; fall back to regular jar
-COPY --from=build /workspace/build/libs/*-all.jar /app/app.jar
-COPY --from=build /workspace/build/libs/*SNAPSHOT.jar /app/app-fallback.jar
+# Copy fat jar (name pattern: *-all.jar from Shadow plugin)
+COPY --from=build /workspace/build/libs/*-all.jar /app/application.jar
+ENV JAVA_OPTS=""
 EXPOSE 8080
-ENV JAVA_OPTS="-XX:+UseZGC -XX:+AlwaysActAsServerClassMachine -Xms128m -Xmx512m"
-ENTRYPOINT [ "bash", "-lc", "exec java $JAVA_OPTS -jar ${APP_JAR:-/app/app.jar}" ]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/application.jar"]
