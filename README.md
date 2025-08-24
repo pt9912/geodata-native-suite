@@ -34,3 +34,17 @@ make status
 ## Repository-Metadaten (Empfehlung)
 - **Beschreibung:** Monorepo für GeoData Microservices (STAC Index/Search/Fetch, NGINX Streaming), Helm-Charts & RKE2-Deployment. Micronaut + GraalVM Native.
 - **Topics:** `geospatial`, `stac`, `micronaut`, `graalvm`, `native-image`, `kubernetes`, `helm`, `nginx`, `rke2`, `external-dns`, `external-secrets`
+
+
+---
+## Services (Source-in-Repo)
+- `services/search-service` – Java Micronaut (GraalVM Native), Endpunkte: `/health`, `GET/POST /api/v1/search`
+- `services/index-service`  – Python FastAPI (S3 Prefix-Listing & STAC-Ableitung: TODO)
+- `services/fetch-service`  – Python FastAPI + Celery Worker (Clipping/COG: TODO)
+- `services/nginx-stream`   – NGINX Offloading-Proxy (Range/Slice + Cache)
+
+Builden der Images (lokal, mit Platzhalter ORG & TAG):
+```bash
+./scripts/build_images.sh dburkard geodata-native-suite v0.1.0
+# danach im Helm via --set image.tag=v0.1.0 deployen
+```
