@@ -1,0 +1,23 @@
+
+micronaut:
+  application:
+    name: search-service
+  server:
+    port: 8080
+  tracing:
+    enabled: true
+    exporter:
+      otlp:
+        enabled: false
+
+endpoints:
+  health:
+    enabled: true
+    sensitive: false
+
+datasources:
+  default:
+    url: jdbc:postgresql://postgis:5432/geodata
+    driverClassName: org.postgresql.Driver
+    username: geodata
+    password: geodata

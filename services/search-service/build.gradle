@@ -1,0 +1,43 @@
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'io.micronaut.application' version '4.4.4'
+    id 'io.micronaut.aot' version '4.4.4'
+}
+
+group = 'io.geodata'
+version = '0.1.0'
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
+repositories { mavenCentral() }
+
+micronaut {
+    version '4.9.2'
+    runtime 'netty'
+    processing { incremental true }
+    aot {
+        optimizeServiceLoading = true
+        convertYamlToJava = true
+        precomputeOperations = true
+    }
+}
+
+dependencies {
+    annotationProcessor "io.micronaut:micronaut-http-validation"
+    implementation "io.micronaut:micronaut-http-server-netty"
+    implementation "io.micronaut.serde:micronaut-serde-jackson"
+    implementation "io.micronaut.tracing:micronaut-tracing-opentelemetry-http"
+    implementation "io.micronaut.cache:micronaut-cache-redis"
+    implementation "io.micronaut.data:micronaut-data-jdbc"
+    runtimeOnly "org.postgresql:postgresql:42.7.4"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.3"
+}
+
+application {
+    mainClass = "io.geodata.search.Application"
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
