@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **search-service(native)**: BASE_IMAGE auf GraalVM Community 21-ol9 gestellt; JAVA_HOME/PATH korrekt; Probe nutzt `command -v` statt `which`.
+
+### Fixed
 - **CI**: Überflüssigen trailing Step "Ensure gradle wrapper is executable" entfernt (nicht nötig; Dockerfile setzt +x intern).
 
 ### Changed
