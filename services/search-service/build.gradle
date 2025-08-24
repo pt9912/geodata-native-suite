@@ -33,7 +33,7 @@ micronaut {
 dependencies {
     implementation "io.micronaut.redis:micronaut-redis-lettuce"
     implementation "io.micronaut.cache:micronaut-cache-core"
-    implementation(platform(\"io.micronaut.redis:micronaut-redis-bom:${micronautRedisVersion}\"))
+    implementation(platform("io.micronaut.redis:micronaut-redis-bom:${micronautRedisVersion}"))
     implementation(platform("io.micronaut.tracing:micronaut-tracing-bom:${micronautTracingVersion}"))
     implementation(platform("io.micronaut:micronaut-core-bom:${micronautVersion}"))
     annotationProcessor "io.micronaut:micronaut-http-validation"
