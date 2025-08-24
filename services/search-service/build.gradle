@@ -14,13 +14,14 @@ targetCompatibility = JavaVersion.VERSION_21
 repositories { mavenCentral() }
 
 ext { 
-    micronautVersion = '4.9.10' 
+    javaVersion = 21
     micronautTracingVersion = '7.1.4'
     micronautRedisVersion = '6.8.0'
+    micronautCacheCoreVersion = '5.3.0'
 }
 
 micronaut {
-    version '4.9.10'
+    version '4.9.2'
     runtime 'netty'
     processing { incremental true }
     aot {
@@ -30,15 +31,17 @@ micronaut {
     }
 }
 dependencies {
-    implementation "io.micronaut.redis:micronaut-redis-lettuce"
-    implementation(platform("io.micronaut.platform:micronaut-platform:4.9.10"))
-    implementation "io.micronaut.cache:micronaut-cache-core"
+    implementation platform("io.micronaut:micronaut-core-bom")
+    annotationProcessor platform("io.micronaut:micronaut-core-bom")
+
+    implementation "io.micronaut.redis:micronaut-redis-lettuce:${micronautRedisVersion}"
+    implementation "io.micronaut.cache:micronaut-cache-core:${micronautCacheCoreVersion}"
 
     annotationProcessor "io.micronaut:micronaut-http-validation"
     implementation "io.micronaut:micronaut-http-server-netty"
     implementation "io.micronaut.serde:micronaut-serde-jackson:2.10.2"
-    implementation "io.micronaut.tracing:micronaut-tracing-opentelemetry-http"
-    implementation "io.micronaut.data:micronaut-data-jdbc"
+    implementation "io.micronaut.tracing:micronaut-tracing-opentelemetry-http:7.1.4"
+    implementation "io.micronaut.data:micronaut-data-jdbc:4.13.4"
     runtimeOnly "org.postgresql:postgresql:42.7.4"
     testImplementation "org.junit.jupiter:junit-jupiter:5.10.3"
 }
@@ -53,6 +56,6 @@ tasks.withType(Test).configureEach {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(javaVersion as int)
     }
 }
