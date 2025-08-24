@@ -74,19 +74,23 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install minimal deps (optional)
+        shell: bash
         run: |
-          set -e
+          set -euo pipefail
+          PY="$(command -v python3 || command -v python)"
+          "$PY" -m pip install --upgrade pip
           if [ -f services/index-service/requirements.txt ]; then
-            python3 -m pip install --upgrade pip
-            pip install --no-cache-dir --no-deps -r services/index-service/requirements.txt || true
+            "$PY" -m pip install --no-cache-dir --no-deps -r services/index-service/requirements.txt || true
           fi
           if [ -f services/fetch-service/requirements.txt ]; then
-            python3 -m pip install --upgrade pip
-            pip install --no-cache-dir --no-deps -r services/fetch-service/requirements.txt || true
+            "$PY" -m pip install --no-cache-dir --no-deps -r services/fetch-service/requirements.txt || true
           fi
       - name: Syntax check (py_compile)
+        shell: bash
         run: |
-          python3 - <<'PY'
+          set -euo pipefail
+          PY="$(command -v python3 || command -v python)"
+          "$PY" - <<'PY'
           import py_compile, sys, pathlib
           paths = [
             "services/index-service/app",
@@ -107,8 +111,11 @@ jobs:
           PY
       - name: Import smoke (non-fatal)
         continue-on-error: true
+        shell: bash
         run: |
-          python3 - <<'PY'
+          set -euo pipefail
+          PY="$(command -v python3 || command -v python)"
+          "$PY" - <<'PY'
           import importlib.util, os, traceback
           files = [
             "services/index-service/app/main.py",
@@ -122,6 +129,7 @@ jobs:
                 spec.loader.exec_module(m)  # type: ignore
                 print(f"[OK] import {p}")
               except Exception as e:
-                print(f"[WARN] import {p}: {e}\n{traceback.format_exc()}")
+                print(f"[WARN] import {p}: {e}
+{traceback.format_exc()}")
           PY
             PY
