@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **CI**: Überflüssigen trailing Step "Ensure gradle wrapper is executable" entfernt (nicht nötig; Dockerfile setzt +x intern).
+
 ### Changed
 - **search-service(native)**: microdnf-Install entfernt; Build nutzt konsequent Gradle Wrapper.
 - **search-service(native)**: ENV-Zeilen repariert und JDK21 für Gradle erzwungen.

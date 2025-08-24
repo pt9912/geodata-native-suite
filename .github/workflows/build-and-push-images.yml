@@ -110,9 +110,3 @@ jobs:
             ${{ steps.prep.outputs.latest_tag || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - name: Ensure gradle wrapper is executable
-        shell: bash
-        run: |
-          set -euo pipefail
-          chmod +x ./gradlew || true
-          ls -l ./gradlew || true
