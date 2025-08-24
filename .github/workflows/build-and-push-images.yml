@@ -1,3 +1,9 @@
+  - name: Ensure gradle wrapper is executable
+    shell: bash
+    run: |
+      set -euo pipefail
+      chmod +x ./gradlew || true
+      ls -l ./gradlew || true
 ---
 name: Images (build & push)
 
