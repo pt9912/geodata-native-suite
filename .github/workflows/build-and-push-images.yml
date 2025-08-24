@@ -84,7 +84,7 @@ jobs:
           set -euo pipefail
           IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}"
           SHA_TAG="${IMAGE}:sha-${GITHUB_SHA::7}"
-          BRANCH="${GITHUB_REF_NAME//\//-}"
+          BRANCH="${GITHUB_REF_NAME//echo "BASE_IMAGE=${ steps.graal_base_probe.outputs.base != '' && steps.graal_base_probe.outputs.base || '${COMMUNITY_21}' }" >> $GITHUB_ENV//-}"
           BRANCH_TAG="${IMAGE}:${BRANCH}"
           echo "image=${IMAGE}" >> $GITHUB_OUTPUT
           echo "sha_tag=${SHA_TAG}" >> $GITHUB_OUTPUT
