@@ -13,8 +13,10 @@ sourceCompatibility = JavaVersion.VERSION_21
 targetCompatibility = JavaVersion.VERSION_21
 repositories { mavenCentral() }
 
+
+ext { micronautVersion = '4.9.10' }
 micronaut {
-    version '4.9.2'
+    version '4.9.10'
     runtime 'netty'
     processing { incremental true }
     aot {
@@ -25,6 +27,8 @@ micronaut {
 }
 
 dependencies {
+    implementation(platform(\"io.micronaut:micronaut-core-bom:${micronautVersion}\"))
+    implementation platform("io.micronaut:micronaut-core-bom:${micronautVersion}")
     annotationProcessor "io.micronaut:micronaut-http-validation"
     implementation "io.micronaut:micronaut-http-server-netty"
     implementation "io.micronaut.serde:micronaut-serde-jackson"

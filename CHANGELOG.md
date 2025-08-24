@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Helm Values: Plattform-spezifische Defaults (RKE2/EKS/AKS) weiter harmonisieren – *geplant*
 
 ### Fixed
+- **search-service**: BOM auf `io.micronaut:micronaut-core-bom:${micronautVersion}` umgestellt.
+- **search-service**: Micronaut auf 4.9.10 angehoben (Gradle `micronaut { version }`).
 - **search-service**: Build-Abhängigkeiten stabilisiert (Micronaut BOM eingebunden).
 - **search-service-native**: GraalVM BASE_IMAGE robust gemacht (Default + Workflow-Probe).
 - **CI**: Diagnose-Step „Workflow file line count“ gehärtet (continue-on-error, kein Abbruch mehr).
