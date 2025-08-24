@@ -1,6 +1,10 @@
 ---
 extends: default
 
+ignore: |
+  charts/*/templates/*.yaml
+  charts/*/templates/*.yml
+
 rules:
   line-length:
     max: 160
@@ -11,4 +15,6 @@ rules:
   indentation:
     indent-sequences: consistent
   document-start:
+    present: true
+  new-line-at-end-of-file:
     present: true
