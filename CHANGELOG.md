@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+- **CI**: `on: [push, pull_request]` in Workflows in Mapping-Form konvertiert (truthy-Regel).
+- **YAML**: fehlende abschließende Newlines in Values-Dateien ergänzt.
+- **YAML**: Indentation in externalsecrets-Beispielen korrigiert.
 ## [geodata-3-patch-v1] - 2025-08-24
 ### Added
 - **search-service (Java/Micronaut)**: STAC `/api/v1/search` (POST) mit Filterobjekt (`bbox`, `datetime`, `collections`, `intersects`, `q`), **BBox-Reprojektion** `EPSG:3857 → EPSG:4326`.
