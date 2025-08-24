@@ -17,6 +17,7 @@ repositories { mavenCentral() }
 ext { 
     micronautVersion = '4.9.10' 
     micronautTracingVersion = '7.1.4'
+    micronautRedisVersion = '6.8.0'
 }
 
 micronaut {
@@ -30,13 +31,15 @@ micronaut {
     }
 }
 dependencies {
+    implementation "io.micronaut.redis:micronaut-redis-lettuce"
+    implementation "io.micronaut.cache:micronaut-cache-core"
+    implementation(platform(\"io.micronaut.redis:micronaut-redis-bom:${micronautRedisVersion}\"))
     implementation(platform("io.micronaut.tracing:micronaut-tracing-bom:${micronautTracingVersion}"))
     implementation(platform("io.micronaut:micronaut-core-bom:${micronautVersion}"))
     annotationProcessor "io.micronaut:micronaut-http-validation"
     implementation "io.micronaut:micronaut-http-server-netty"
     implementation "io.micronaut.serde:micronaut-serde-jackson:2.10.2"
     implementation "io.micronaut.tracing:micronaut-tracing-opentelemetry-http"
-implementation "io.micronaut.cache:micronaut-cache-redis:5.6.0"
     implementation "io.micronaut.data:micronaut-data-jdbc"
     runtimeOnly "org.postgresql:postgresql:42.7.4"
     testImplementation "org.junit.jupiter:junit-jupiter:5.10.3"
