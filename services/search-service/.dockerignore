@@ -1,6 +1,10 @@
+build/
+.gradle/
+out/
+*.log
+.git
+.gitignore
+README*
 
-build
-.gradle
-out
 .idea
 *.iml
