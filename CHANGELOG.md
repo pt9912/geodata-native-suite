@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **YAML**: Indentation in externalsecrets-Beispielen korrigiert.
 - **search-service-native**: BASE_IMAGE-Übergabe im Workflow konditional gemacht (kein leeres build-arg mehr).
 - **search-service**: Micronaut auf 4.9.10 + core-bom vereinheitlicht; `micronaut-serde-jackson` mit Version gepinnt.
+- **Workflows**: top-level Schlüssel `'on'` gequotet, um yamllint *truthy*-Warnungen zu eliminieren.
+- **YAML**: Externalsecrets-Beispiele von `?`-Schlüsselindikatoren bereinigt und Einrückung automatisch korrigiert.
 ## [geodata-3-patch-v1] - 2025-08-24
 ### Added
 - **search-service (Java/Micronaut)**: STAC `/api/v1/search` (POST) mit Filterobjekt (`bbox`, `datetime`, `collections`, `intersects`, `q`), **BBox-Reprojektion** `EPSG:3857 → EPSG:4326`.

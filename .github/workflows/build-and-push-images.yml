@@ -1,7 +1,7 @@
 ---
 name: Images (build & push)
 
-on:
+'on':
   push:
     branches: ["main", "geodata-*", "release-*"]
     paths:
