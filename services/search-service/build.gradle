@@ -1,5 +1,6 @@
 
 plugins {
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'java'
     id 'application'
     id 'io.micronaut.application' version '4.4.4'
@@ -40,4 +41,10 @@ application {
 
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
