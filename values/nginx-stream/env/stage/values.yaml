@@ -1,4 +1,7 @@
+---
 
 replicaCount: 2
 resources:
-  requests: { cpu: "500m", memory: "256Mi" }
+  requests:
+    cpu: "500m"
+    memory: "256Mi"

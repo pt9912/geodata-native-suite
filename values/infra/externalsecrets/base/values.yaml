@@ -1,4 +1,7 @@
+---
 
 installCRDs: true
-metrics: { enabled: false }
-webhook: { timeoutSeconds: 10 }
+metrics:
+  enabled: false
+webhook:
+  timeoutSeconds: 10

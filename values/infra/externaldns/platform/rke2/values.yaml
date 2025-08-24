@@ -1,10 +1,14 @@
+---
 
 provider: hetzner
 policy: upsert-only
 interval: 1m
 sources: ["ingress"]
-rbac: { create: true }
-serviceAccount: { create: true, name: external-dns }
+rbac:
+  create: true
+serviceAccount:
+  create: true
+  name: external-dns
 env:
   - name: HETZNER_TOKEN
     valueFrom:

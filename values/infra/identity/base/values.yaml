@@ -1,5 +1,9 @@
+---
 
-auth: { existingSecret: "", adminUser: admin, adminPassword: "" }
+auth:
+  existingSecret: ""
+  adminUser: admin
+  adminPassword: ""
 production: true
 proxy: edge
 ingress:
@@ -12,14 +16,19 @@ ingress:
       secretName: keycloak-tls
 postgresql:
   enabled: true
-  auth: { username: bn_keycloak, password: "keycloakpass", database: bitnami_keycloak }
+  auth:
+    username: bn_keycloak
+    password: "keycloakpass"
+    database: bitnami_keycloak
 smtp:
   enabled: true
   from: noreply@example.com
   host: smtp.example.com
   port: 587
   tls: true
-  auth: { username: "", password: "" }
+  auth:
+    username: ""
+    password: ""
 extraEnvVars:
   - name: KEYCLOAK_PROXY
     value: edge
