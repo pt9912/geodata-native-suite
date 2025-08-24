@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Helm Values: Plattform-spezifische Defaults (RKE2/EKS/AKS) weiter harmonisieren – *geplant*
 
 ### Fixed
+- **fetch-service**: Abhängigkeitskonflikt boto3/aioboto3/botocore behoben, Pin auf botocore=1.34.131 (boto3=1.34.131).
 - NGINX Cache-Invalidierung für re-verarbeitete Ergebnisse – *geplant*
 
 ---
