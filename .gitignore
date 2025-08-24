@@ -1,1 +1,127 @@
-/scripts/
+# === OS / Editor ===
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.orig
+*.bak
+*.tmp
+~$*
+.idea/
+.vscode/
+.history/
+.fleet/
+*.code-workspace
+
+# === Root env / secrets (Beispiele mit .env.example committet) ===
+.env
+**/.env
+**/.env.local
+**/.env.*.local
+secrets/
+**/secrets/**
+*.pem
+*.key
+*.p12
+
+# === Logs / cache ===
+logs/
+log/
+*.log
+*.pid
+*.seed
+.cache/
+.tmp/
+tmp/
+temp/
+
+# === Archives / generated ===
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# === Java / Gradle (Micronaut) ===
+.gradle/
+build/
+out/
+target/
+hs_err_pid*
+replay_pid*
+
+# Wichtig: gradle wrapper committen!
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.venv/
+venv/
+env/
+dist/
+wheelhouse/
+.eggs/
+*.egg-info/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.ipynb_checkpoints/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# === Node (falls später UI dazukommt) ===
+node_modules/
+npm-debug.log*
+yarn-error.log
+.pnpm-store/
+.eslintcache
+
+# === Docker / Compose ===
+.docker/
+docker-compose.override.yml
+docker-compose.local.yml
+**/.dockerignore.local
+
+# === Helm / Kubernetes ===
+# Helm-Packages & lokale Render-Artefakte
+charts/*.tgz
+charts/**/charts/*.tgz
+charts/**/tmp/
+charts/**/manifests/
+# Lokale values (nicht für Git gedacht)
+values/**/*local*.yaml
+values/**/*private*.yaml
+values/**/*secrets*.yaml
+
+# === RKE2 / Deploy ===
+deploy/**/.env
+deploy/**/artifacts/
+deploy/**/manifests/
+deploy/**/kubeconfig
+deploy/**/generated/
+
+# === Devcontainer (nur temporäres Zeugs) ===
+.devcontainer/.venv/
+.devcontainer/.cache/
+
+# === Data / Testdaten groß ===
+data/
+datasets/
+samples/
+*.tif
+*.tiff
+*.jp2
+
+# === Misc ===
+*.coverage
+*.DS_Store
