@@ -1,0 +1,6 @@
+
+jobs:
+  - bucket: "sentinel-s2-l1c"
+    prefix: "tiles/32/U/QC/"
+    endpoint_url: null
+    cron: "15 */6 * * *"

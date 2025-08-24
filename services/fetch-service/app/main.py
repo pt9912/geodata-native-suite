@@ -1,22 +1,35 @@
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from pydantic import BaseModel
 from typing import Optional
-import os
+from .config import MODE, ALLOWED_BUCKETS
+from .s3util import presign
 
-app = FastAPI(title="fetch-service", version="0.1.0")
+app = FastAPI(title="fetch-service", version="0.2.0")
 
 class FetchJob(BaseModel):
-    dataset_id: str
-    bbox: Optional[list[float]] = None
-    crs: Optional[str] = "EPSG:4326"
-    format: Optional[str] = "COG"
+    bucket: str
+    key: str
+    mode: Optional[str] = None
+    content_type: Optional[str] = "application/octet-stream"
 
 @app.get("/health")
 def health():
-    return {"status":"OK"}
+    return {"status":"OK","mode":MODE}
 
 @app.post("/api/v1/fetch")
 def fetch(job: FetchJob):
-    # TODO: Enqueue Celery Job; presigned URL oder X-Accel-Redirect
-    return {"status":"accepted", "job": job.model_dump()}
+    if ALLOWED_BUCKETS and job.bucket not in ALLOWED_BUCKETS:
+        raise HTTPException(status_code=403, detail="Bucket not allowed")
+    mode = (job.mode or MODE).lower()
+    if mode == "presigned":
+        url = presign(job.bucket, job.key)
+        return {"status":"ok","mode":"presigned","url":url}
+    elif mode == "accel":
+        headers = {
+            "X-Accel-Redirect": f"/internal/s3/{job.bucket}/{job.key}",
+            "Content-Type": job.content_type or "application/octet-stream"
+        }
+        return Response(status_code=200, headers=headers)
+    else:
+        raise HTTPException(status_code=400, detail="mode must be presigned|accel")
