@@ -3,9 +3,9 @@ name: CI
 
 on:
   push:
-    branches: [ "main", "geodata-*", "release-*" ]
+    branches: ["main", "geodata-*", "release-*"]
   pull_request:
-    branches: [ "**" ]
+    branches: ["**"]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -51,7 +51,7 @@ jobs:
           set -euo pipefail
           shopt -s nullglob
           for chart in charts/*; do
-            if [ -f "$chart/Chart.yaml" ]; then
+            if [-f "$chart/Chart.yaml"]; then
               echo "==> helm lint $chart"
               helm lint "$chart"
             fi
@@ -73,7 +73,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ -x "services/search-service/gradlew" ]; then
+          if [-x "services/search-service/gradlew"]; then
             (cd services/search-service && ./gradlew --no-daemon clean build -x test)
           else
             echo "gradlew not found in services/search-service (skipping)"
@@ -96,10 +96,10 @@ jobs:
           set -euo pipefail
           PY="$(command -v python3 || command -v python)"
           "$PY" -m pip install --upgrade pip
-          if [ -f services/index-service/requirements.txt ]; then
+          if [-f services/index-service/requirements.txt]; then
             "$PY" -m pip install --no-cache-dir --no-deps -r services/index-service/requirements.txt || true
           fi
-          if [ -f services/fetch-service/requirements.txt ]; then
+          if [-f services/fetch-service/requirements.txt]; then
             "$PY" -m pip install --no-cache-dir --no-deps -r services/fetch-service/requirements.txt || true
           fi
       - name: Syntax check (py_compile)
@@ -109,10 +109,9 @@ jobs:
           PY="$(command -v python3 || command -v python)"
           "$PY" - <<'PY'
           import py_compile, sys, pathlib
-          paths = [
-            "services/index-service/app",
+          paths = [            "services/index-service/app",
             "services/fetch-service/app"
-          ]
+]
           ok=True
           for base in paths:
             p = pathlib.Path(base)
@@ -134,10 +133,9 @@ jobs:
           PY="$(command -v python3 || command -v python)"
           "$PY" - <<'PY'
           import importlib.util, os, traceback
-          files = [
-            "services/index-service/app/main.py",
+          files = [            "services/index-service/app/main.py",
             "services/fetch-service/app/main.py"
-          ]
+]
           for p in files:
             if os.path.exists(p):
               try:

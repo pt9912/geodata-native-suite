@@ -3,7 +3,7 @@ name: Images (build & push)
 
 on:
   push:
-    branches: [ "main", "geodata-*", "release-*" ]
+    branches: ["main", "geodata-*", "release-*"]
     paths:
       - "services/**"
       - "charts/**"
@@ -88,7 +88,7 @@ jobs:
           echo "image=${IMAGE}" >> $GITHUB_OUTPUT
           echo "sha_tag=${SHA_TAG}" >> $GITHUB_OUTPUT
           echo "branch_tag=${BRANCH_TAG}" >> $GITHUB_OUTPUT
-          if [ "${{ github.ref_type }}" = "branch" ] && [ "${{ github.ref_name }}" = "main" ]; then
+          if ["${{ github.ref_type }}" = "branch"] && ["${{ github.ref_name }}" = "main"]; then
             echo "latest_tag=${IMAGE}:latest" >> $GITHUB_OUTPUT
           fi
 
