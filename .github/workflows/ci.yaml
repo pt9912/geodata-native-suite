@@ -7,10 +7,18 @@ on:
   pull_request:
     branches: [ "**" ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   yamllint:
     name: YAML Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,14 +27,17 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install yamllint
-        run: pip install yamllint
+        run: python3 -m pip install --upgrade pip yamllint
       - name: Lint YAML
         run: |
+          echo "Workflow file line count:"
+          wc -l .github/workflows/ci.yaml || true
           yamllint -c .yamllint.yaml .
 
   helm-lint:
     name: Helm Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,7 +46,9 @@ jobs:
         with:
           version: v3.14.4
       - name: Lint all charts
+        shell: bash
         run: |
+          set -euo pipefail
           shopt -s nullglob
           for chart in charts/*; do
             if [ -f "$chart/Chart.yaml" ]; then
@@ -47,6 +60,7 @@ jobs:
   gradle-verify:
     name: Search-Service JVM build (sanity)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -56,7 +70,9 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
       - name: Gradle build (if wrapper exists)
+        shell: bash
         run: |
+          set -euo pipefail
           if [ -x "services/search-service/gradlew" ]; then
             (cd services/search-service && ./gradlew --no-daemon clean build -x test)
           else
@@ -66,6 +82,7 @@ jobs:
   python-sanity:
     name: Python services syntax & import smoke
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -129,7 +146,5 @@ jobs:
                 spec.loader.exec_module(m)  # type: ignore
                 print(f"[OK] import {p}")
               except Exception as e:
-                print(f"[WARN] import {p}: {e}
-{traceback.format_exc()}")
+                print(f"[WARN] import {p}: {e}\n{traceback.format_exc()}")
           PY
-            PY
