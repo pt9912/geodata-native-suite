@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **search-service(native)**: GraalVM-Builder auf **Community JDK 21** (`ghcr.io/graalvm/native-image-community:21-ol9`) umgestellt, um `Unsupported class file major version 68` zu vermeiden.
 - **CI**: Fix für BASE_IMAGE-Export – Ausdruck in Bash-If gekapselt (keine GitHub-Expression im Shell-Substitution-Kontext).
 - **CI**: `Prepare tags` robust gemacht (sauberes Branch-Slugging, korrekte Bash-Syntax, keine BASE_IMAGE-Injektionen).
+- **CI**: Workflow-Header/Steps bereinigt – Wrapper-Step korrekt nach Checkout verschoben; führende YAML-Fragmente entfernt.
 ## [geodata-3-patch-v1] - 2025-08-24
 ### Added
 - **search-service (Java/Micronaut)**: STAC `/api/v1/search` (POST) mit Filterobjekt (`bbox`, `datetime`, `collections`, `intersects`, `q`), **BBox-Reprojektion** `EPSG:3857 → EPSG:4326`.
