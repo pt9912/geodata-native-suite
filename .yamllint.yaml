@@ -1,3 +1,4 @@
+---
 extends: default
 
 rules:
@@ -9,3 +10,5 @@ rules:
     check-keys: false
   indentation:
     indent-sequences: consistent
+  document-start:
+    present: true

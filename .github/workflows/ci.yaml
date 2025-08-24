@@ -1,3 +1,4 @@
+---
 name: CI
 
 on:
@@ -21,7 +22,7 @@ jobs:
         run: pip install yamllint
       - name: Lint YAML
         run: |
-          yamllint -c .yamllint.yaml . || (echo "::warning::yamllint reported issues"; exit 1)
+          yamllint -c .yamllint.yaml .
 
   helm-lint:
     name: Helm Lint
@@ -76,18 +77,18 @@ jobs:
         run: |
           if [ -f services/index-service/requirements.txt ]; then
             python -m pip install --upgrade pip
-            pip install -r services/index-service/requirements.txt || true
+            pip install --no-cache-dir -r services/index-service/requirements.txt || true
           fi
       - name: Install minimal deps (fetch-service)
         run: |
           if [ -f services/fetch-service/requirements.txt ]; then
             python -m pip install --upgrade pip
-            pip install -r services/fetch-service/requirements.txt || true
+            pip install --no-cache-dir -r services/fetch-service/requirements.txt || true
           fi
       - name: Import check
         run: |
           python - <<'PY'
-          import importlib.util, sys, os
+          import importlib.util, sys, os, traceback
           paths = [
             "services/index-service/app/main.py",
             "services/fetch-service/app/main.py"
@@ -95,14 +96,13 @@ jobs:
           ok = True
           for p in paths:
             if os.path.exists(p):
-              name = os.path.splitext(os.path.basename(p))[0]
-              spec = importlib.util.spec_from_file_location(name, p)
               try:
+                spec = importlib.util.spec_from_file_location("mod", p)
                 m = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(m) # type: ignore
+                spec.loader.exec_module(m)  # type: ignore
                 print(f"[OK] import {p}")
               except Exception as e:
-                print(f"[FAIL] import {p}: {e}")
+                print(f"::error file={p}:: {e}\n{traceback.format_exc()}")
                 ok = False
           sys.exit(0 if ok else 1)
           PY
