@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- `services/search-service/Dockerfile.jvm`: Multi-stage Build (Gradle 8.8 JDK21 → Temurin 21-jre)
+
+### Changed
 - **search-service(jvm)**: Multi-Stage Dockerfile – wrapper in Build-Stage erzeugt und fat-jar nach Temurin JRE21 kopiert; reproduzierbarer Build ohne lokalen Wrapper.
 
 ### Changed
