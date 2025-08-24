@@ -1,0 +1,107 @@
+name: Images (build & push)
+
+on:
+  push:
+    branches: [ "main", "geodata-*", "release-*" ]
+    paths:
+      - "services/**"
+      - "charts/**"
+      - ".github/workflows/build-and-push-images.yml"
+  workflow_dispatch: {}
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAMESPACE: ${{ github.repository_owner }}/geodata-native-suite
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  docker-setup:
+    name: Set up Docker Buildx
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.key }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: cache-key
+        run: echo "key=$(date +%Y%m%d)-${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+  build-matrix:
+    name: Build & Push
+    needs: docker-setup
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # search-service: JVM (portable)
+          - name: search-service-jvm
+            context: services/search-service
+            file: services/search-service/Dockerfile.jvm
+            image: search-service
+          # search-service: Native (fast startup)
+          - name: search-service-native
+            context: services/search-service
+            file: services/search-service/Dockerfile.native
+            image: search-service-native
+          # index-service (python)
+          - name: index-service
+            context: services/index-service
+            file: services/index-service/Dockerfile
+            image: index-service
+          # fetch-service (api)
+          - name: fetch-service
+            context: services/fetch-service
+            file: services/fetch-service/Dockerfile
+            image: fetch-service
+          # fetch-worker (celery)
+          - name: fetch-worker
+            context: services/fetch-service
+            file: services/fetch-service/Dockerfile.worker
+            image: fetch-worker
+          # nginx-stream
+          - name: nginx-stream
+            context: services/nginx-stream
+            file: services/nginx-stream/Dockerfile
+            image: nginx-stream
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare tags
+        id: prep
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}"
+          SHA_TAG="${IMAGE}:sha-${GITHUB_SHA::7}"
+          BRANCH="${GITHUB_REF_NAME//\//-}"
+          BRANCH_TAG="${IMAGE}:${BRANCH}"
+          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
+          echo "sha_tag=${SHA_TAG}" >> $GITHUB_OUTPUT
+          echo "branch_tag=${BRANCH_TAG}" >> $GITHUB_OUTPUT
+          if [ "${{ github.ref_type }}" = "branch" ] && [ "${{ github.ref_name }}" = "main" ]; then
+            echo "latest_tag=${IMAGE}:latest" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build & Push (${{ matrix.name }})
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          push: true
+          tags: |
+            ${{ steps.prep.outputs.sha_tag }}
+            ${{ steps.prep.outputs.branch_tag }}
+            ${{ steps.prep.outputs.latest_tag || '' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

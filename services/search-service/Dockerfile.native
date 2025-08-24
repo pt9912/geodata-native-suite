@@ -1,0 +1,15 @@
+# Native build using GraalVM container toolchain
+FROM ghcr.io/graalvm/native-image:ol9-java21-24.0.2 AS build
+WORKDIR /work
+COPY . .
+# Install Gradle if wrapper is missing
+RUN microdnf install -y unzip tar gzip curl findutils &&     ( [ -f ./gradlew ] || (curl -sL https://services.gradle.org/distributions/gradle-8.8-bin.zip -o /tmp/gradle.zip &&       unzip -q /tmp/gradle.zip -d /opt && ln -s /opt/gradle-8.8/bin/gradle /usr/local/bin/gradle) )
+# Build native image
+RUN ( [ -x ./gradlew ] && ./gradlew -x test nativeCompile ) || gradle -x test nativeCompile
+
+FROM gcr.io/distroless/base-nossl:nonroot
+WORKDIR /app
+COPY --from=build /work/build/native/nativeCompile/search-service /app/search-service
+USER nonroot
+EXPOSE 8080
+ENTRYPOINT ["/app/search-service"]

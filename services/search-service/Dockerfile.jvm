@@ -1,0 +1,15 @@
+# Build stage: JVM fat jar
+FROM gradle:8.8-jdk21 AS build
+WORKDIR /workspace
+COPY . .
+RUN gradle --no-daemon clean shadowJar || gradle --no-daemon clean build
+
+# Runtime stage
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+# Try shadow jar first; fall back to regular jar
+COPY --from=build /workspace/build/libs/*-all.jar /app/app.jar
+COPY --from=build /workspace/build/libs/*SNAPSHOT.jar /app/app-fallback.jar
+EXPOSE 8080
+ENV JAVA_OPTS="-XX:+UseZGC -XX:+AlwaysActAsServerClassMachine -Xms128m -Xmx512m"
+ENTRYPOINT [ "bash", "-lc", "exec java $JAVA_OPTS -jar ${APP_JAR:-/app/app.jar}" ]
