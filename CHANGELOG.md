@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **search-service(jvm/native)**: fehlende Artefakt-Versionen (z.B. micronaut-data-jdbc) durch Import der `io.micronaut.platform:micronaut-platform` BOM behoben.
+
+### Fixed
 - **search-service(native)**: BASE_IMAGE auf GraalVM Community 21-ol9 gestellt; JAVA_HOME/PATH korrekt; Probe nutzt `command -v` statt `which`.
 
 ### Fixed
