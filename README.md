@@ -11,9 +11,41 @@ Vereint **Charts**, **Values** (base→platform→env), **RKE2-Deployment** und 
 
 ---
 
-## Quickstart (RKE2/Hetzner)
-# Devcontainer öffnen (optional)
+## Start
 ```bash
+cp .env.example .env
+#docker compose -f compose/docker-compose.yml up --build
+docker compose -f compose/docker-compose.yml up -d nginxlog-exporter kafka-lag-exporter burrow burrow-exporter prometheus grafana
+# Grafana: http://localhost:3000 (admin/admin)
+
+# MinIO Demo-Bucket (optional)
+bash scripts/minio-mc-allow.sh
+```
+
+## Quickstart Testdaten
+```bash
+cd tools/data-gen
+# 1) Build Generator-Container (GDAL + Python)
+docker build -t geodata-datagen .
+
+# 2) 2GB COG erzeugen (1 Band, Float32) und lokal ablegen
+mkdir -p ./out
+docker run --rm -v $PWD/out:/out geodata-datagen   python /app/gen_geotiff.py --width 32768 --height 32768 --dtype float32 --cog --outfile /out/demo_2gb.tif
+
+# 3) In MinIO hochladen
+docker run --rm -v $PWD/out:/data geodata-datagen   python /app/upload_s3.py --endpoint http://minio:9000 --access-key minioadmin --secret-key minioadmin123   --bucket mybucket --prefix test --path /data
+
+# 4) STAC-Items generieren und nach PostGIS einspielen
+docker run --rm geodata-datagen   python /app/gen_grid_stac.py --bbox 6.0,49.0,8.0,51.0 --tiles 10,10 --from 2025-08-01 --to 2025-08-31  | docker run -i --rm geodata-datagen python /app/bulk_index_postgis.py --pg postgresql://app:apppw@postgres:5432/geodata
+
+# 5) Kafka-Events simulieren
+docker run --rm geodata-datagen   python /app/event_fuzzer.py --bootstrap redpanda:9092 --schema-url http://redpanda:8081 --count 1000
+```
+
+
+## Quickstart (RKE2/Hetzner)
+```bash
+# Devcontainer öffnen (optional)
 cp deploy/rke2/.env.example deploy/rke2/.env
 # .env anpassen: PARENT_ZONE=xxxx.de, BASE=geo.xxxx.de, HETZNER_API_TOKEN=...
 cd deploy/rke2
