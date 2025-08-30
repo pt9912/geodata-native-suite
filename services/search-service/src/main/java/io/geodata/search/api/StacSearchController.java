@@ -20,10 +20,13 @@ public class StacSearchController {
         fc.put("features", List.of());
         Map<String,Object> ctx = new LinkedHashMap<>();
         ctx.put("bbox", bbox);
-        ctx.put("datetime", filter.datetime);
+        ctx.put("dt_from", filter.dt_from);
+        ctx.put("dt_to", filter.dt_to);
         ctx.put("collections", filter.collections);
         ctx.put("q", filter.q);
         ctx.put("crs", "EPSG:4326");
+        ctx.put("limit", filter.limit);
+        ctx.put("offset", filter.offset);
         fc.put("context", ctx);
         // TODO: PostGIS/SpatiaLite Query; Textsuche; Paging
         return fc;

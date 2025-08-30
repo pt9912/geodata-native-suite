@@ -15,3 +15,5 @@ tests/
 .gitignore
 README*
 *.log
+
+Dockerfile

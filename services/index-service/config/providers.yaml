@@ -1,7 +1,25 @@
 ---
 
-jobs:
-  - bucket: "sentinel-s2-l1c"
-    prefix: "tiles/32/U/QC/"
-    endpoint_url: null
-    cron: "15 */6 * * *"
+# jobs:
+#   - bucket: "sentinel-s2-l1c"
+#     prefix: "tiles/32/U/QC/"
+#     endpoint_url: null
+#     cron: "15 */6 * * *"
+
+default_mode: stac
+stac:
+  endpoint: "https://planetary-computer.microsoft.com/api/stac/v1"
+  collections: ["sentinel-2-l2a"]
+  limit: 50
+s3:
+  bucket: "sentinel-s2-l1c"
+  prefix: "tiles/32/U/QC/2025/8/22/"
+  region: "eu-central-1"
+  requester_pays: true
+schedules:
+  - name: stac_daily
+    cron: "0 2 * * *"
+    mode: stac
+  - name: s3_hourly
+    cron: "15 * * * *"
+    mode: s3

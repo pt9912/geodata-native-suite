@@ -1,6 +1,9 @@
 # ---------- Build Stage ----------
 FROM gradle:8.8-jdk21 AS build
 WORKDIR /work
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  libsqlite3-mod-spatialite \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy sources
 COPY . .
@@ -11,11 +14,16 @@ RUN gradle wrapper --gradle-version 8.8
 # Baue Fat-Jar mit Gradle-Wrapper (Tests werden übersprungen)
 RUN ./gradlew --no-daemon -x test shadowJar
 
+#RUN find / -name "*spatialite*" && FALSE
+
 # ---------- Runtime Stage ----------
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 # Copy artifact
+COPY --from=build /usr/lib/x86_64-linux-gnu/mod_spatialite* /usr/lib/x86_64-linux-gnu/
 COPY --from=build /work/build/libs/*-all.jar app.jar
+
+#RUN find / -name "*spatialite*" && FALSE
 
 ENTRYPOINT ["java","-jar","app.jar"]
