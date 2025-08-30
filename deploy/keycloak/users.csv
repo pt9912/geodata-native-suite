@@ -1,0 +1,3 @@
+username,email,firstName,lastName,password,roles
+alice,alice@example.org,Alice,Example,Secret123!,user;analyst
+bob,bob@example.org,Bob,Builder,S3cur3P@ss,user;viewer
