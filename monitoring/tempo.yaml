@@ -1,0 +1,32 @@
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+        http:
+
+ingester:
+  lifecycler:
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /tmp/tempo/traces
+    block:
+      bloom_filter_false_positive: .05
+      # index_downsample_bytes und encoding sind in 2.8.2 nicht mehr hier konfigurierbar
+      # Block-Einstellungen werden automatisch von Tempo verwaltet
+
+compactor:
+  compaction:
+    compaction_window: 1h  # Zeitfenster für Compaction (z. B. 1 Stunde)
+    max_block_bytes: 100000000  # Optional: Maximale Blockgröße
+    block_retention: 1h  # Optional: Wie lange Blöcke behalten werden

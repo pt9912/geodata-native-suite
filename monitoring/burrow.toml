@@ -1,0 +1,34 @@
+
+[general]
+logdir="logs"
+logconfig=""
+pidfile="pidFile"
+
+[logging]
+level="debug"
+
+
+[client-profile.profile]
+kafka-version="3.2.0"
+client-id="docker-client"
+
+# Kafka cluster definition
+[cluster.local]
+client-profile="profile"
+class-name="kafka"
+servers=["redpanda:9092"]
+topic-refresh=60
+offsets-topic="__consumer_offsets"
+
+
+
+# Consumer for the same cluster (no zookeeper, use kafka client)
+[consumer.local]
+class-name="kafka"
+cluster="local"
+servers=["redpanda:9092"]
+group-denylist="^(console-consumer-|python-kafka-consumer-).*$"
+intervals=10
+
+[httpserver.default]
+address=":8000"

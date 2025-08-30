@@ -1,0 +1,34 @@
+
+listen:
+  port: 4040
+namespaces:
+  - name: nginx_access
+    # Muss zum NGINX log_format 'main' passen
+    format: "$remote_addr - $remote_user [$time_local] \"$request_method $uri $server_protocol\" $status $body_bytes_sent \"$http_referer\" \"$http_user_agent\" up:$upstream_status cache:$upstream_cache_status rt:$request_time urt:$upstream_response_time"
+    source:
+      files:
+        - /var/log/nginx/access.log
+    labels:
+      app: geodata-nginx
+metrics:
+  - name: nginx_http_response_count
+    type: counter
+    help: HTTP responses by status
+    match: '.*" (?P<status>\d{3}) .*'
+    labels: [status]
+  - name: nginx_http_response_size_bytes
+    type: histogram
+    help: Response sizes
+    buckets: [1024, 4096, 16384, 65536, 262144, 1048576, 4194304, 16777216]
+    value: $body_bytes_sent
+  - name: nginx_request_time_seconds
+    type: histogram
+    help: Total request time (seconds)
+    buckets: [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 60]
+    value: $request_time
+  - name: nginx_upstream_time_seconds
+    type: histogram
+    help: Upstream response time (seconds, '-' ignored)
+    buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30]
+    match: '.*urt:(?P<urt>\d+(\.\d+)?)$'
+    value: $urt

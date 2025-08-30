@@ -1,0 +1,64 @@
+
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: geodata-slos
+    folder: SLOs
+    interval: 1m
+    rules:
+      - uid: slo-nginx-5xx
+        title: High NGINX 5xx rate (>1% over 5m)
+        condition: A
+        data:
+          - refId: A
+            datasourceUid: Prometheus
+            relativeTimeRange: {from: 300, to: 0}
+            model:
+              expr: |
+                sum(rate(nginx_http_response_count{status=~"5.."}[5m])) 
+                / clamp_min(sum(rate(nginx_http_response_count[5m])), 1)
+              format: time_series
+              instant: false
+        noDataState: NoData
+        execErrState: Error
+        annotations: { summary: "NGINX 5xx rate > 1% (5m)" }
+        labels: { severity: page }
+        for: 5m
+        thresholds:
+          - { op: "gt", value: 0.01 }
+      - uid: slo-relay-latency
+        title: Relay latency p95 > 3s (5m)
+        condition: B
+        data:
+          - refId: B
+            datasourceUid: Prometheus
+            relativeTimeRange: {from: 300, to: 0}
+            model:
+              expr: |
+                histogram_quantile(0.95, sum(rate(nginx_upstream_time_seconds_bucket[5m])) by (le))
+              format: time_series
+              instant: false
+        noDataState: NoData
+        execErrState: Error
+        annotations: { summary: "Fetch relay p95 latency exceeds 3s" }
+        labels: { severity: ticket }
+        for: 10m
+        thresholds:
+          - { op: "gt", value: 3 }
+      - uid: slo-kafka-dlq
+        title: Index DLQ growth (>0 over 10m)
+        condition: C
+        data:
+          - refId: C
+            datasourceUid: Prometheus
+            relativeTimeRange: {from: 600, to: 0}
+            model:
+              expr: |
+                increase(redis_db_keys{db="db0"}[10m])
+              format: time_series
+              instant: false
+        noDataState: NoData
+        execErrState: Error
+        annotations: { summary: "DLQ growth detected (approx. via Redis keys increase)" }
+        labels: { severity: warn }
+        for: 10m
