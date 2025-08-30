@@ -2,9 +2,13 @@
 extends: default
 
 ignore: |
-  charts/*/templates/*.yaml
-  charts/*/templates/*.yml
+  deploy/charts/*/templates/*.yaml
+  deploy/charts/*/templates/*.yml
 
+yaml-files:
+  - values*.y?(a)ml
+  - rendered/*.y?(a)ml
+  
 rules:
   # statt: new-line-at-end-of-file: {present: true}
   new-line-at-end-of-file: enable
