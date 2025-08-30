@@ -1,0 +1,4 @@
+hcloud_token="hc_XXXX"
+server_type="cx22"
+location="nbg1"
+ssh_username="root"
