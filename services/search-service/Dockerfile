@@ -1,6 +1,6 @@
 
 # Build Native Image
-FROM ghcr.io/graalvm/native-image:ol9-java21-24.0.2 AS build
+FROM ghcr.io/graalvm/native-image-community:24.0.2-ol9 AS build
 WORKDIR /work
 COPY . .
 # Hinweis: nutzt gradle wrapper, alternativ: gradle im Container bereitstellen

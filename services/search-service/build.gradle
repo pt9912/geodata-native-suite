@@ -9,12 +9,12 @@ plugins {
 
 group = 'io.geodata'
 version = '0.1.0'
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
+sourceCompatibility = JavaVersion.VERSION_24
+targetCompatibility = JavaVersion.VERSION_24
 repositories { mavenCentral() }
 
 ext { 
-    javaVersion = 21
+    javaVersion = 24
     micronautTracingVersion = '7.1.4'
     micronautRedisVersion = '6.8.0'
     micronautCacheCoreVersion = '5.3.0'

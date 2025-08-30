@@ -4,19 +4,20 @@ ARG BASE_IMAGE=ghcr.io/graalvm/native-image-community:24.0.2-ol9
 
 
 # Stage 0: bootstrap gradle wrapper (no network tools needed in Graal stage)
-FROM gradle:8.8-jdk21 AS bootstrap
+FROM gradle:8.14-jdk24 AS bootstrap
 WORKDIR /src
 COPY . .
-RUN gradle -q wrapper --gradle-version 8.8
+RUN gradle -q wrapper --gradle-version 8.14
 
-# Stage 1: native-image build using GraalVM CE JDK21
+# Stage 1: native-image build using GraalVM CE JDK24
 FROM ${BASE_IMAGE} AS build
 
 RUN microdnf install findutils
 
 
 WORKDIR /work
-ENV JAVA_HOME=/usr/lib64/graalvm/graalvm-community-java21
+#RUN echo $JAVA_HOME
+
 ENV PATH=$JAVA_HOME/bin:$PATH
 # copy wrapper from bootstrap
 COPY --from=bootstrap /src/gradlew ./gradlew
