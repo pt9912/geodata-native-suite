@@ -1,0 +1,7 @@
+---
+
+replicaCount: 4
+resources:
+  requests: { cpu: "200m", memory: "256Mi" }
+  limits:   { cpu: "1000m", memory: "1024Mi" }
+hpa: { enabled: true, minReplicas: 4, maxReplicas: 12, cpuUtilization: 70 }
