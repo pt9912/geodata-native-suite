@@ -20,11 +20,11 @@ groups:
               instant: false
         noDataState: NoData
         execErrState: Error
-        annotations: { summary: "NGINX 5xx rate > 1% (5m)" }
-        labels: { severity: page }
+        annotations: {summary: "NGINX 5xx rate > 1% (5m)"}
+        labels: {severity: page}
         for: 5m
         thresholds:
-          - { op: "gt", value: 0.01 }
+          - {op: "gt", value: 0.01}
       - uid: slo-relay-latency
         title: Relay latency p95 > 3s (5m)
         condition: B
@@ -39,11 +39,11 @@ groups:
               instant: false
         noDataState: NoData
         execErrState: Error
-        annotations: { summary: "Fetch relay p95 latency exceeds 3s" }
+        annotations: {summary: "Fetch relay p95 latency exceeds 3s"}
         labels: {severity: ticket}
         for: 10m
         thresholds:
-          - { op: "gt", value: 3 }
+          - {op: "gt", value: 3}
       - uid: slo-kafka-dlq
         title: Index DLQ growth (>0 over 10m)
         condition: C
@@ -58,6 +58,6 @@ groups:
               instant: false
         noDataState: NoData
         execErrState: Error
-        annotations: { summary: "DLQ growth detected (approx. via Redis keys increase)" }
+        annotations: {summary: "DLQ growth detected (approx. via Redis keys increase)"}
         labels: {severity: warn}
         for: 10m
