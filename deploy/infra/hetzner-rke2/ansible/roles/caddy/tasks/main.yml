@@ -1,0 +1,24 @@
+- name: Install Caddy
+  apt:
+    name: caddy
+    state: present
+    update_cache: true
+
+- name: Ensure Caddy directory exists
+  file:
+    path: /etc/caddy
+    state: directory
+    mode: '0755'
+
+- name: Deploy Caddyfile (templated)
+  template:
+    src: Caddyfile.j2
+    dest: /etc/caddy/Caddyfile
+    mode: '0644'
+  notify: Restart caddy
+
+- name: Ensure caddy service enabled and running
+  systemd:
+    name: caddy
+    state: started
+    enabled: true

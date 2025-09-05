@@ -1,0 +1,13 @@
+{
+  email {{ caddy_email }}
+  # acme_ca https://acme-staging-v02.api.letsencrypt.org/directory  # uncomment for staging
+}
+
+{{ caddy_app_fqdn }} {
+  encode zstd gzip
+  reverse_proxy {{ caddy_backend_http }}
+}
+
+{{ caddy_api_fqdn }} {
+  reverse_proxy {{ caddy_kubeapi }}
+}

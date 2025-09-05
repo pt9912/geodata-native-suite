@@ -1,0 +1,25 @@
+- name: Install dependencies
+  apt:
+    name:
+      - curl
+      - jq
+    state: present
+    update_cache: true
+
+- name: Fetch server IP
+  set_fact:
+    server_ip: "{{ hostvars[groups['controlplane'][0]]['ansible_host'] | default(groups['controlplane'][0]) }}"
+
+- name: Get token from controlplane
+  slurp:
+    src: /root/rke2_node_token
+  delegate_to: "{{ groups['controlplane'][0] }}"
+  register: token_raw
+
+- name: Install RKE2 agent
+  shell: |
+    export RKE2_URL="https://{{ server_ip }}:9345"
+    export RKE2_TOKEN="{{ token_raw.content | b64decode | trim }}"
+    curl -sfL https://get.rke2.io | INSTALL_RKE2_CHANNEL=stable sh -
+    systemctl enable rke2-agent
+    systemctl start rke2-agent

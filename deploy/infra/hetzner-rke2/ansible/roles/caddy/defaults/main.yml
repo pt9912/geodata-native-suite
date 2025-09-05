@@ -1,0 +1,6 @@
+# Vars for generating Caddyfile
+caddy_email: "you@example.com"
+caddy_app_fqdn: "geodata.example.com"
+caddy_api_fqdn: "kubeapi.example.com"
+caddy_backend_http: "127.0.0.1:30080"   # NodePort of nginx-stream (HTTP)
+caddy_kubeapi: "127.0.0.1:6443"         # Local RKE2 API

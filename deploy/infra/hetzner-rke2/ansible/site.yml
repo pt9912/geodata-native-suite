@@ -1,0 +1,14 @@
+- hosts: controlplane
+  become: true
+  roles:
+    - caddy
+
+- hosts: controlplane
+  become: true
+  roles:
+    - rke2-server
+
+- hosts: workers
+  become: true
+  roles:
+    - rke2-agent

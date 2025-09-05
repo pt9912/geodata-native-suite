@@ -1,0 +1,30 @@
+- name: Install dependencies
+  apt:
+    name:
+      - curl
+      - jq
+    state: present
+    update_cache: true
+
+- name: Install RKE2 server
+  shell: |
+    curl -sfL https://get.rke2.io | INSTALL_RKE2_CHANNEL=stable sh -
+    systemctl enable rke2-server
+    systemctl start rke2-server
+
+- name: Wait for kubeconfig
+  wait_for:
+    path: /etc/rancher/rke2/rke2.yaml
+    timeout: 300
+
+- name: Read node-token
+  slurp:
+    src: /var/lib/rancher/rke2/server/node-token
+  register: node_token_raw
+
+- name: Save node token to file for fetch
+  copy:
+    dest: /root/rke2_node_token
+    content: "{{ node_token_raw.content | b64decode }}"
+    mode: '0600'
+
