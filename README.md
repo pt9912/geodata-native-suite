@@ -49,6 +49,12 @@ docker run --rm geodata-datagen   python /app/event_fuzzer.py --bootstrap redpan
 cp deploy/rke2/.env.example deploy/rke2/.env
 # .env anpassen: PARENT_ZONE=xxxx.de, BASE=geo.xxxx.de, HETZNER_API_TOKEN=...
 cd deploy/rke2
+
+#dev
+make apps
+make status-dev
+
+#prod
 make identity
 make dns
 make tls
@@ -163,3 +169,35 @@ cd services/search-service
 ./gradlew run
 ```
 ---
+
+## Deployment – lokal (k3d) & Hetzner (RKE2)
+
+Diese Distribution bringt zwei Wege zum Testen und Betreiben der Helm-Charts:
+
+### A) Lokal mit k3d (schnelle Iteration)
+```bash
+./apply.sh local up
+./apply.sh charts sync
+# -> http://localhost:8080
+```
+- Startet ein k3d-Cluster (1x Server, 2x Agent), mapped Ports 80/443 auf 8080/8443.
+- Eignet sich für schnelles Tuning der Values, Liveness/Readiness, Ingress/Services.
+
+### B) Hetzner mit RKE2 (realitätsnah)
+```bash
+export HCLOUD_TOKEN=...
+./apply.sh hetzner up
+./apply.sh kubeconfig print
+./apply.sh charts sync <hetzner-context>
+```
+- Provisioniert Hetzner-Server mit Terraform und installiert RKE2 via Ansible.
+- `kubeconfig-hetzner` wird lokal abgelegt; der `print`-Befehl zeigt den Export an.
+- Charts werden im Namespace `geodata` deployed.
+
+**Struktur**
+- `apply.sh` – Orchestriert lokale & Hetzner-Cluster und Chart-Deployments
+- `infra/local/` – k3d Quickstart
+- `infra/hetzner/terraform/` – Hetzner-Netz & Nodes (Terraform)
+- `infra/hetzner/ansible/` – RKE2 Playbooks/Rollen + `scripts/fetch-kubeconfig.sh`
+
+> Optional: CSI (hcloud-csi), cert-manager und Cilium/Hubble können leicht ergänzt werden.
