@@ -111,3 +111,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Apache-2.0** als Projektslizenz (LICENSE + NOTICE im Root und in jedem Helm-Chart).
 - Helm `Chart.yaml` mit `annotations.licenses: Apache-2.0` ergänzt.
+
+## 2025-08-30 – Infrastruktur: k3d & RKE2 (Hetzner)
+
+- **Neu:** `apply.sh` für lokale k3d-Cluster und Hetzner RKE2-Provisionierung
+- **Neu:** Terraform-Definitionen für Hetzner (Netz, Control-Plane, Worker)
+- **Neu:** Ansible-Rollen für RKE2-Server/-Agent und `fetch-kubeconfig.sh`
+- **Docs:** README-Abschnitt „Deployment – lokal (k3d) & Hetzner (RKE2)“
