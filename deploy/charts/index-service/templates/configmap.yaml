@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMap.name }}
+data:
+  {{ .Values.configMap.schemaFileName }}: |-
+    {
+      "type":"record",
+      "name":"StacItem",
+      "namespace":"com.example.avro",
+      "fields":[
+        {"name":"id","type":"string"},
+        {"name":"collection","type":"string"},
+        {"name":"datetime","type":"string"},
+        {"name":"geometry","type":["null","string"], "default": null},
+        {"name":"properties","type":["null","string"], "default": null}
+      ]
+    }  

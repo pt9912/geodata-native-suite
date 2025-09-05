@@ -1,5 +1,3 @@
----
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -41,14 +39,24 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.env }}
           env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            - name: STAC_AVRO_SCHEMA
+              value: {{ printf "%s/%s" .Values.configMap.mountPath .Values.configMap.schemaFileName | quote }}
+            {{- if .Values.extraEnvVars }}
+            {{- toYaml .Values.extraEnvVars | nindent 12 }}
+            {{- end }}
           {{- with .Values.envFrom }}
           envFrom:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: {{ printf "%s/%s" .Values.configMap.mountPath .Values.configMap.schemaFileName | quote }}
+              subPath: {{ .Values.configMap.schemaFileName | quote }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Values.configMap.name }}
 ---
 apiVersion: v1
 kind: ServiceAccount

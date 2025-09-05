@@ -2,7 +2,7 @@
 replicaCount: 2
 
 image:
-  repository: ghcr.io/example/nginx-stream:latest
+  repository: ghcr.io/pt9912/geodata-native-suite/nginx-stream:geodata-6
   tag: ""
   pullPolicy: IfNotPresent
 
