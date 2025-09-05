@@ -1,0 +1,32 @@
+# Hetzner Cloud
+hcloud_token        = "hc_XXXXXXXXXXXXXXXX"
+server_location     = "nbg1"
+server_type         = "cx22"
+ssh_public_key_path = "~/.ssh/id_ed25519.pub"
+ssh_allowed_cidr    = "0.0.0.0/0"
+
+# Packer Snapshot Image Name
+image_name          = "golden-registry-base-YYYYMMDDhhmmss"
+
+# DNS/TLS
+registry_domain = "registry.example.com"
+acme_email      = "admin@example.com"
+
+# Basic Auth
+registry_username = "registryuser"
+registry_password = "ChangeMe123!"
+
+# S3 / Hetzner Object Storage
+s3_endpoint          = "https://fsn1.your-object-storage.com"
+s3_region            = "eu-central"
+s3_bucket_name       = "my-registry-bucket"
+s3_access_key        = "XXXXXXXX"
+s3_secret_key        = "YYYYYYYY"
+s3_use_path_style  = true
+s3_create_bucket     = true
+
+# Cloudflare DNS / DNS-01
+cf_api_token   = "CF_TOKEN_WITH_ZONE_DNS_EDIT"
+cf_zone_id     = ""          # optional für A-Record
+cf_record_name = "registry"  # registry.<zone>
+cf_proxied     = false
