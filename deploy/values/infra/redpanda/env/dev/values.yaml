@@ -1,0 +1,30 @@
+statefulset:
+  replicas: 1
+
+storage:
+  persistentVolume:
+    size: 10Gi
+
+resources:
+  requests:
+    cpu: "1"
+    memory: "2Gi"
+  limits:
+    cpu: "2"
+    memory: "4Gi"
+
+tls:
+  enabled: false
+
+listeners:
+  kafka:
+    port: 9092  # Interner Port (kann 9092 bleiben)
+    tls:
+      enabled: false
+    external:
+      default:
+        port: 30092  # Externer Port (NodePort) im gültigen Bereich 30000–32767
+        advertisedPorts:
+          - 30092  # Muss mit dem externen Port übereinstimmen
+        tls:
+          enabled: false

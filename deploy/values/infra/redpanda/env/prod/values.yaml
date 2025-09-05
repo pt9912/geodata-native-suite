@@ -1,0 +1,18 @@
+# Prod-Überschreibungen
+statefulset:
+  replicas: 3  # Mehr Broker in Prod
+
+storage:
+  persistentVolume:
+    size: 100Gi  # Mehr Speicher in Prod
+
+resources:
+  requests:
+    cpu: "2"
+    memory: "4Gi"
+  limits:
+    cpu: "4"
+    memory: "8Gi"
+
+tls:
+  enabled: true  # TLS in Prod aktiviert

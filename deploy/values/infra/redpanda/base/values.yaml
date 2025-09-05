@@ -1,0 +1,32 @@
+# Gemeinsame Konfiguration für alle Umgebungen
+statefulset:
+  replicas: 3
+
+storage:
+  persistentVolume:
+    size: 20Gi
+    storageClass: ""  # Wird in platform/ oder env/ überschrieben
+
+resources:
+  requests:
+    cpu: "1"
+    memory: "2Gi"
+  limits:
+    cpu: "2"
+    memory: "4Gi"
+
+tls:
+  enabled: true  # Standardmäßig aktiviert, wird in env/dev/ überschrieben
+
+listeners:
+  kafka:
+    port: 9092
+    tls:
+      enabled: true  # Standardmäßig aktiviert
+    external:
+      default:
+        port: 9094
+        advertisedPorts:
+          - 31092
+        tls:
+          enabled: true

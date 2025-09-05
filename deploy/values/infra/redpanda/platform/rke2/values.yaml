@@ -1,0 +1,12 @@
+# RKE2-spezifische Werte
+storage:
+  persistentVolume:
+    storageClass: "longhorn"  # Verwende Longhorn als StorageClass
+    # storageClass: "longhorn-static"  # Alternativ für statische Volumes
+
+# NodeSelector für RKE2 (falls nötig)
+statefulset:
+  podTemplate:
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: worker1
