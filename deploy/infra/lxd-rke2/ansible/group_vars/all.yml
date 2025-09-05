@@ -1,0 +1,5 @@
+primary_master: master1
+
+ansible_user: ubuntu
+ansible_become: true
+

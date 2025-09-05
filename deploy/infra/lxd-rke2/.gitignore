@@ -1,0 +1,9 @@
+packer.auto.pkrvars.hcl
+terraform.tfvars
+.terraform/
+.terraform.lock.*
+terraform.tfstate
+*.backup
+*.copy
+inventory.ini
+inventory*.yml
