@@ -30,9 +30,13 @@ RUN chmod +x ./gradlew \
  && JAVA_HOME=$JAVA_HOME PATH=$JAVA_HOME/bin:$PATH ./gradlew -x test nativeCompile
 
 # Stage 2: minimal runtime image
-FROM gcr.io/distroless/base-nossl:nonroot
+FROM gcr.io/distroless/cc-debian12:nonroot
 WORKDIR /app
 COPY --from=build /work/build/native/nativeCompile/* /app/
+COPY --from=build /usr/lib64/libz.so.1.2.11 /app/libz.so.1.2.11
+COPY --from=build /usr/lib64/libz.so.1 /app/libz.so.1
+COPY --from=build /usr/lib64/libz.so /app/libz.so
+ENV LD_LIBRARY_PATH=/app
 USER nonroot
 EXPOSE 8080
-ENTRYPOINT ["/app/application"]
+ENTRYPOINT ["/app/search-service"]

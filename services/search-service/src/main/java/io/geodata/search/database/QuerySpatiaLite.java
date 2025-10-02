@@ -2,6 +2,7 @@ package io.geodata.search.database;
 
 import io.geodata.search.*;
 import io.geodata.search.model.*;
+import io.geodata.search.util.Crs;
 import java.util.*;
 
 import javax.sql.DataSource;
@@ -49,9 +50,15 @@ public class QuerySpatiaLite implements QueryDb {
         }
 
         if (!filter.bbox.isEmpty()) {
-            //minX, minY, maxX, maxY,
-            where.append(" AND ST_Intersects(geom, BuildMBR(?, ?, ?, ?, '4326'))");
-            params.addAll(filter.bbox);
+            int srid = Crs.srid(filter.crs);
+            if (srid == 4326) {
+                where.append(" AND ST_Intersects(geom, BuildMBR(?, ?, ?, ?, 4326))");
+                params.addAll(filter.bbox);
+            } else {
+                where.append(" AND ST_Intersects(geom, Transform(BuildMBR(?, ?, ?, ?, ?), 4326))");
+                params.addAll(filter.bbox);
+                params.add(srid);
+            }
         }
 
         String sql = "SELECT id, collection, dt, MbrMinX(geom), MbrMinY(geom), MbrMaxX(geom), MbrMaxY(geom) " +
