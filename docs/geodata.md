@@ -175,8 +175,8 @@ Provider → index-service → PostGIS/STAC → search-service → fetch-service
 | Komponente       | Technologie                                      | Version/Profil         |
 |------------------|---------------------------------------------------|------------------------|
 | index-service    | Python/FastAPI                                    | Python 3.9             |
-| search-service   | **Java/Micronaut (Native Image)**                 | **Micronaut 4.9.2, GraalVM 24.0.2 (JDK 21)** |
-| fetch-service    | Python/Celery + Flask (Relay)                     | Python 3.9             |
+| search-service   | **Java/Micronaut (Native Image)**                 | **Micronaut 4.9.2, GraalVM 24.0.2 (JDK 24)** |
+| fetch-service    | Python/FastAPI + Celery (Relay)                   | Python 3.9             |
 | Datenbank (Heavy)| **PostGIS/TimescaleDB**                           | PostgreSQL 14          |
 | Datenbank (Light)| **SpatiaLite (SQLite)** – *kleine Lösung/Edge*    | Aktuell                |
 | Cache            | Redis Cluster                                     | 6                      |
@@ -237,8 +237,8 @@ spec:
 
 **Container-Build (Search, Native):**
 ```Dockerfile
-# Build: GraalVM 24.0.2 (JDK 21) + Micronaut Native
-FROM ghcr.io/graalvm/native-image:ol9-java21-24.0.2 AS build
+# Build: GraalVM 24.0.2 (JDK 24) + Micronaut Native
+FROM ghcr.io/graalvm/native-image-community:24.0.2-ol9 AS build
 WORKDIR /work
 COPY . .
 RUN ./gradlew -x test nativeCompile
@@ -352,4 +352,5 @@ ENTRYPOINT ["/app/search-service"]
 Die Architektur definiert drei Kern-Services (index, search, fetch) und ergänzt diese durch **NGINX** als Streaming-Front mit internem Relay.  
 Der search-service unterstützt **STAC-/search (POST)**, **Textsuche** und **CRS-Reprojektion**; **SpatiaLite** dient als *kleine Lösung* (JVM), **PostGIS** als Heavy-Variante (Native).  
 S3-Zugriffe sind über **Allowlist** abgesichert, Presigned-URLs bleiben intern.  
+Asynchrone Fetch-Jobs erzeugen zugeschnittene (optional reprojizierte) Assets über Worker.  
 Nicht-funktionale Anforderungen (Performance, Sicherheit, Observability, CI/CD) und Tests sind konkretisiert; Risiken (Skalierung, Native, Cache-Invalidierung) sind adressiert.

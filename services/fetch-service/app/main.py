@@ -1,9 +1,12 @@
 
 from fastapi import FastAPI, HTTPException, Response, Request
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, Field, validator
+from typing import Optional, List
+from celery.result import AsyncResult
+
 from .config import MODE, ALLOWED_BUCKETS
 from .s3util import presign
+from .celery_worker import clip_dataset, celery_app
 
 import os, json, uuid, time, urllib.parse
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
@@ -29,6 +32,21 @@ class FetchJob(BaseModel):
     key: str
     mode: Optional[str] = None
     content_type: Optional[str] = "application/octet-stream"
+
+
+class ClipJob(BaseModel):
+    bucket: str
+    key: str
+    bbox: Optional[List[float]] = Field(default=None, description="[minx,miny,maxx,maxy]")
+    crs: str = "EPSG:4326"
+    output_bucket: Optional[str] = None
+    requester_pays: bool = False
+
+    @validator("bbox")
+    def bbox_length(cls, value):
+        if value is not None and len(value) != 4:
+            raise ValueError("bbox must have exactly four elements")
+        return value
 
 def authed(request: Request):
     a = request.headers.get("Authorization", "")
@@ -92,3 +110,50 @@ def fetch(job: FetchJob, request: Request):
         return Response(status_code=200, headers=headers)
     else:
         raise HTTPException(status_code=400, detail="mode must be presigned|accel")
+
+
+@app.post("/api/v1/clip", status_code=202)
+def enqueue_clip(job: ClipJob, request: Request):
+    if not authed(request):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    if ALLOWED_BUCKETS and job.bucket not in ALLOWED_BUCKETS:
+        raise HTTPException(status_code=403, detail="Bucket not allowed")
+    if ALLOWED_BUCKETS and job.output_bucket and job.output_bucket not in ALLOWED_BUCKETS:
+        raise HTTPException(status_code=403, detail="Output bucket not allowed")
+
+    bbox_tuple = tuple(job.bbox) if job.bbox else None
+    task = clip_dataset.apply_async(
+        args=[job.bucket, job.key, job.output_bucket, bbox_tuple, job.crs, job.requester_pays],
+        queue="fetch",
+    )
+    emit_status(task.id, "queued", {
+        "bucket": job.bucket,
+        "key": job.key,
+        "bbox": job.bbox,
+        "crs": job.crs,
+    })
+    return {"job_id": task.id, "status": "queued"}
+
+
+def _map_state(state: str) -> str:
+    mapping = {
+        "PENDING": "queued",
+        "RECEIVED": "running",
+        "STARTED": "running",
+        "RETRY": "retry",
+        "FAILURE": "error",
+        "SUCCESS": "done",
+    }
+    return mapping.get(state.upper(), state.lower())
+
+
+@app.get("/api/v1/clip/{job_id}")
+def clip_status(job_id: str):
+    result = AsyncResult(job_id, app=celery_app)
+    payload = {"job_id": job_id, "status": _map_state(result.state)}
+    if result.successful():
+        payload["result"] = result.result
+    elif result.failed():
+        payload["error"] = str(result.result)
+    return payload
