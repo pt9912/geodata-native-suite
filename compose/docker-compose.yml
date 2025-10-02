@@ -44,6 +44,7 @@ services:
     ports: ["5432:5432"]
     volumes:
       - pg_data:/var/lib/postgresql/data
+      - ../testdata/search-service/postgis-items.sql:/docker-entrypoint-initdb.d/postgis-items.sql:ro
     depends_on: [ minio ]
 
   # wal-g Sidecar (Demo)
@@ -81,7 +82,8 @@ services:
       DEMO_TOKEN: ${DEMO_TOKEN:-demo}
       CONFIG_FILE: /app/config/config.yaml
       KAFKA_BOOTSTRAP: ${KAFKA_BOOTSTRAP:-redpanda:9092}
-    expose: ["5000"]
+    ports:
+      - "5000:5000"
     volumes:
       - ../services/fetch-service/config:/app/config:ro
     depends_on: [ redpanda ]
@@ -142,7 +144,7 @@ services:
     depends_on: [ redis, rabbitmq, redpanda, postgres ]
 
   worker:
-    build: ./index-service
+    build: ../services/index-service
     container_name: index-worker
     command: ["celery","-A","app.celery_app.celery","worker","-Q","index","-l","INFO","--without-gossip","--without-mingle"]
     environment:
@@ -158,19 +160,33 @@ services:
       SCHEMA_REGISTRY_URL: http://redpanda:8081
       AWS_REGION: ${AWS_REGION:-eu-central-1}
     volumes:
-      - ./index-service/config:/app/config:ro
-      - ./schemas/avro:/app/schemas/avro:ro
-      - ./data/tiles:/app/data/tiles:ro
+      - ../services/index-service/config:/app/config:ro
+      - ../schemas/avro:/app/schemas/avro:ro
+      - ../data/tiles:/app/data/tiles:ro
     depends_on: [ redis, rabbitmq, redpanda, postgres ]
 
   beat:
-    build: ./index-service
+    build: ../services/index-service
     container_name: index-beat
     command: ["celery","-A","app.celery_app.celery","beat","-l","INFO"]
     environment:
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
       RABBITMQ_URL: ${RABBITMQ_URL:-amqp://guest:guest@rabbitmq:5672//}
     depends_on: [ worker ]
+
+  fetch-worker:
+    build: ../services/fetch-service
+    container_name: fetch-worker
+    command: ["celery","-A","app.celery_worker:celery_app","worker","--loglevel=INFO","-Q","fetch"]
+    environment:
+      AWS_REGION: ${AWS_REGION:-eu-central-1}
+      KAFKA_BOOTSTRAP: ${KAFKA_BOOTSTRAP:-redpanda:9092}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      S3_ENDPOINT_URL: ${S3_ENDPOINT_URL:-http://minio:9000}
+      REQUEST_PAYER: ${REQUEST_PAYER:-}
+    volumes:
+      - ../services/fetch-service/config:/app/config:ro
+    depends_on: [ fetch, redpanda, redis, minio ]
 
   nginx:
     image: nginx:1.27-alpine
